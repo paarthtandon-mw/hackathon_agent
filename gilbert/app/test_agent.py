@@ -1,5 +1,5 @@
 import asyncio
-from gilbert.agent.agent import agent
+from gilbert.agent.just_chat_gpt import agent
 from autogen_agentchat.ui import Console
 
 
