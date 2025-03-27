@@ -172,3 +172,10 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+.files
+.chainlit
+.coding
+
+chainlit.md
+export_env.sh

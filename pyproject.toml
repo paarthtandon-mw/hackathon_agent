@@ -6,11 +6,19 @@ authors = [
     {name = "Paarth Tandon",email = "paarth.tandon@meltwater.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.12,<4.0.0"
 dependencies = [
+    "autogen-ext[openai] (>=0.4.9.2,<0.5.0.0)",
+    "autogen-agentchat (>=0.4.9.2,<0.5.0.0)",
+    "chainlit (>=2.4.302,<3.0.0)",
+    "autogenstudio (>=0.4.2,<0.5.0)"
 ]
 
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.11.2"
+
