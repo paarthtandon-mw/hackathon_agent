@@ -5,13 +5,13 @@ from autogen_agentchat.base import TaskResult
 from autogen_agentchat.messages import ModelClientStreamingChunkEvent, TextMessage
 from autogen_agentchat.teams import RoundRobinGroupChat
 
-from gilbert.agent.just_chat_gpt import agent
+from gilbert.agent.multi_agent.the_bois import team
 
 
 @cl.on_chat_start
 async def start_chat() -> None:
     cl.user_session.set("prompt_history", "")
-    cl.user_session.set("team", agent)
+    cl.user_session.set("team", team)
 
 
 @cl.set_starters

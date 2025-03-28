@@ -3,7 +3,7 @@ from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.conditions import TextMessageTermination
 from autogen_agentchat.teams import RoundRobinGroupChat
 
-from gilbert.agent.prompts import SYSTEM_PROMPT
+from gilbert.agent.base.prompts import SYSTEM_PROMPT
 
 
 AGENT_NAME = "agent"
