@@ -1,0 +1,164 @@
+
+-Goal-
+Given a text document that is potentially relevant to this activity and a list of entity types, identify all entities of those types from the text and all relationships among the identified entities.
+
+-Steps-
+1. Identify all entities. For each identified entity, extract the following information:
+- entity_name: Name of the entity, capitalized
+- entity_type: One of the following types: [author, document, field, query, platform, social media, engagement, verification, language, location, source, provider, media type, pricing, news focus, outlet type, copyright owner, social origin type, user tag, analytics, result list, search API, boolean query, alias, script, function]
+- entity_description: Comprehensive description of the entity's attributes and activities
+Format each entity as ("entity"{tuple_delimiter}<entity_name>{tuple_delimiter}<entity_type>{tuple_delimiter}<entity_description>)
+
+2. From the entities identified in step 1, identify all pairs of (source_entity, target_entity) that are *clearly related* to each other.
+For each pair of related entities, extract the following information:
+- source_entity: name of the source entity, as identified in step 1
+- target_entity: name of the target entity, as identified in step 1
+- relationship_description: explanation as to why you think the source entity and the target entity are related to each other
+- relationship_strength: an integer score between 1 to 10, indicating strength of the relationship between the source entity and target entity
+Format each relationship as ("relationship"{tuple_delimiter}<source_entity>{tuple_delimiter}<target_entity>{tuple_delimiter}<relationship_description>{tuple_delimiter}<relationship_strength>)
+
+3. Return output in The primary language of the provided text is "English". as a single list of all the entities and relationships identified in steps 1 and 2. Use **{record_delimiter}** as the list delimiter.
+
+4. If you have to translate into The primary language of the provided text is "English"., just translate the descriptions, nothing else!
+
+5. When finished, output {completion_delimiter}.
+
+-Examples-
+######################
+
+Example 1:
+
+entity_types: [author, document, field, query, platform, social media, engagement, verification, language, location, source, provider, media type, pricing, news focus, outlet type, copyright owner, social origin type, user tag, analytics, result list, search API, boolean query, alias, script, function]
+text:
+ (String)    | Information Model Guild |
+| metaData.mainAuthor.human<br><br>*metaData.authors.human*<br><br>**authorHuman, authorhuman**                                         | The author is probably a human if set to "true". The author is probably a bot if set to "false".<br><br>Mainly for social feeds (currently instagram & twitter)                                                                                                                                                               | Exact match                 | Boolean          | Core Platform           |
+| metaData.mainAuthor.externalId<br><br>*metaData.authors.id*<br><br>*authors[].id*<br><br>**authorId, authorid, authorID**             | Meltwater Influencers ID (a.k.a Kermit ids) of the author.<br><br>Note that the *metaData.mainAuthor.externalId* contains the kermit id but with a *namespace prefix* (`id:internalmw:<id>`) to avoid collisions with other external ids (such as twitter and instagram)                                                      | Exact match                 | String           | Information Model Guild |
+| metaData.authors.imageUrl<br><br>*authors[].avatarUrl*                                                                                | The URL to an profile image of the author.                                                                                                                                                                                                                                                                                    | *Not supported in queries.* | String           | Information Model Guild |
+| metaData.authors.link<br><br>**authors[].url**                                                                                        | The URL of the author on the social network this document came from. For example "https://twitter.com/meltwater" which is the Twitter profile page for @Meltwater.                                                                                                                                                            | *Not supported in queries.* | String           | Information Model Guild |
+| metaData.authors.profileUrl                                                                                                           | The URL that the author has specified as their profile. For example "https://www.meltwater.com/" which @Meltwater has specified as their public profile page.                                                                                                                                                                 | *Not supported in queries.* | String           | Information Model Guild |
+| metaData.mainAuthor.engagementScore<br><br>*metaData.authors.engagementScore*<br><br>**engagementScore**                              | The engagement score of the author. Value is between 0-100 and indicates how engaged this author is with the platform. It is a function of retweets.                                                                                                                                                                          | Range match, Exact match    | Integer          | Haven                   |
+| metaData.mainAuthor.activityCount<br><br>**authorActivity, authoractivity**                                                           | The number of "activities" a user has made on the associated platform. <br><br>For example how many tweets a given twitter user has made on twitter.<br><br>NOTE: this field is the number of activities this user had made at the time of the publishing of the document - it is not updated continuously                    | Range match                 | Long             | Shakespeare             |
+| metaData.mainAuthor.professions<br><br>**authorProfession, authorprofession**                                                         | A list of professions that Meltwater NLP services has detected that this author has.                                                                                                                                                                                                                                          | Exact match                 | Array of Strings | Core Platform           |
+| metaData.mainAuthor.verifiedAccount<br><br>*metaData.authors.twitterInfo.verified*<br><br>**authorVerified, authorverified**          | A boolean indicating if this author is considered verified on the given social platform.                                                                                                                                                                                                                                      | Exact match                 | Boolean          | Information Model Guild |
+| metaData.mainAuthor.verifiedType<br><br>*metaData.authors.twitterInfo.verifiedType*<br><br>**authorVerifiedType, authorverifiedType** | A enum indicating the verification type of this Author, individual (a default platform user), government (Governments, multilaterals and officials), business (businesses and other non-governmental agencies), unknown (verification status missing or unknown) and none (user not verified).                                | Exact match                 | Enum             | Core Platform           |
+| metaData.mainAuthor.verifiedType_ext                                                                                                  | A negative or positive integer                                                                                                                                                                                                                                                                                                | Exact match                 | Integer          | Shakespeare             |
+| metaData.mainAuthor.birthYear<br><br>**authorBirthYear, authorbirthyear**                                                             | The year this author was born.<br><br>This value is an integer with the year counted from year 0.<br><br>Examples: 1990 or 2021                                                                                                                                                                                               | Range match, Exact match    | Integer          | Core Platform           |
+| metaData.mainAuthor.inRelationship<br><br>*metaData.authors.inRelationship*                                                           | The author is in relationship then set to "true", else set to "false".<br><br>Mainly for social feeds (currently instagram & twitter)                                                                                                                                                                                         | Exact match                 | Boolean          | Karma                   |
+
+### Gender
+
+| metaData.authors.gender | Description |
+|-------------------------|-------------|
+| f                       | Female      |
+| m                       | Male        |
+| o                       | Other       |
+| u                       | Unknown     |
+
+### verifiedType
+
+| metaData.mainAuthor.verifiedType | Description                                                                                                                                              |
+|----------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| individual                       | A default platform user                                                                                                                                  |
+| government                       | Governments, multilateral and officials                                                                                                                  |
+| business                         | Businesses and other non-governmental agencies                                                                                                           |
+| none                             | User not verified                                                                                                                                        |
+| unknown                          | Verification status missing or unknown                                                                                                                   |
+| celebrity                        | A celebrity or public figure                                                                                                                             |
+| enterprise                       | Representing a recognized and established business or organization                                                                                       |
+| medium                           | Media outlets                                                                                                                                            |
+| school                           | Educational institutions                                                                                                                                 |
+| website                          | Associated with an official website or domain                                                                                                            |
+| application                      | Accounts that have applied for verification and are awaiting review by the platform to determine their authenticity and eligibility for a verified badge |
+| organization                     | Companies, non-profits & government institutes                                                                                                           |
+| junior_pioneer                   | Young and emerging individuals who have
+------------------------
+output:
+("entity"{tuple_delimiter}AUTHOR{tuple_delimiter}field{tuple_delimiter}The author field indicates whether the author is a human or a bot, primarily used for social feeds like Instagram and Twitter. It includes attributes like human verification, external ID, image URL, profile URL, engagement score, activity count, professions, verified account status, and birth year.{record_delimiter}
+("entity"{tuple_delimiter}ENGAGEMENT SCORE{tuple_delimiter}field{tuple_delimiter}The engagement score is a value between 0-100 that indicates how engaged an author is with the platform, primarily measured by retweets.{record_delimiter}
+("entity"{tuple_delimiter}VERIFIED ACCOUNT{tuple_delimiter}field{tuple_delimiter}The verified account field is a boolean indicating if the author is considered verified on the given social platform.{record_delimiter}
+("entity"{tuple_delimiter}VERIFIED TYPE{tuple_delimiter}field{tuple_delimiter}The verified type field is an enum indicating the verification type of the author, such as individual, government, business, unknown, or none.{record_delimiter}
+("entity"{tuple_delimiter}INFORMATION MODEL GUILD{tuple_delimiter}platform{tuple_delimiter}The Information Model Guild is a platform associated with various author-related fields such as external ID, image URL, profile URL, and verified account status.{record_delimiter}
+("entity"{tuple_delimiter}CORE PLATFORM{tuple_delimiter}platform{tuple_delimiter}The Core Platform is associated with fields like author human verification, professions, verified type, and birth year.{record_delimiter}
+("entity"{tuple_delimiter}HAVEN{tuple_delimiter}platform{tuple_delimiter}Haven is a platform associated with the engagement score field of the author.{record_delimiter}
+("entity"{tuple_delimiter}SHAKESPEARE{tuple_delimiter}platform{tuple_delimiter}Shakespeare is a platform associated with fields like author activity count and verified type extension.{record_delimiter}
+("entity"{tuple_delimiter}KARMA{tuple_delimiter}platform{tuple_delimiter}Karma is a platform associated with the in-relationship field of the author.{record_delimiter}
+("relationship"{tuple_delimiter}AUTHOR{tuple_delimiter}ENGAGEMENT SCORE{tuple_delimiter}The engagement score is a key attribute of the author, indicating their level of engagement with the platform.{tuple_delimiter}8{record_delimiter}
+("relationship"{tuple_delimiter}AUTHOR{tuple_delimiter}VERIFIED ACCOUNT{tuple_delimiter}The verified account status is an important attribute of the author, indicating their verification status on social platforms.{tuple_delimiter}8{record_delimiter}
+("relationship"{tuple_delimiter}AUTHOR{tuple_delimiter}VERIFIED TYPE{tuple_delimiter}The verified type provides detailed information about the author's verification status, such as individual or business.{tuple_delimiter}8{record_delimiter}
+("relationship"{tuple_delimiter}AUTHOR{tuple_delimiter}INFORMATION MODEL GUILD{tuple_delimiter}The Information Model Guild provides various fields related to the author, such as external ID and verified account status.{tuple_delimiter}7{record_delimiter}
+("relationship"{tuple_delimiter}AUTHOR{tuple_delimiter}CORE PLATFORM{tuple_delimiter}The Core Platform is associated with several author-related fields, including human verification and professions.{tuple_delimiter}7{record_delimiter}
+("relationship"{tuple_delimiter}AUTHOR{tuple_delimiter}HAVEN{tuple_delimiter}Haven is associated with the engagement score field, which is a key attribute of the author.{tuple_delimiter}6{record_delimiter}
+("relationship"{tuple_delimiter}AUTHOR{tuple_delimiter}SHAKESPEARE{tuple_delimiter}Shakespeare is associated with the author's activity count and verified type extension fields.{tuple_delimiter}6{record_delimiter}
+("relationship"{tuple_delimiter}AUTHOR{tuple_delimiter}KARMA{tuple_delimiter}Karma is associated with the in-relationship field of the author, indicating their relationship status.{tuple_delimiter}5{completion_delimiter}
+#############################
+
+
+Example 2:
+
+entity_types: [author, document, field, query, platform, social media, engagement, verification, language, location, source, provider, media type, pricing, news focus, outlet type, copyright owner, social origin type, user tag, analytics, result list, search API, boolean query, alias, script, function]
+text:
+                            "count": 1
+                        },
+                        {
+                            "key": "professional wrestler",
+                            "count": 1
+                        },
+                        {
+                            "key": "businessperson",
+                            "count": 1
+                        },
+                        {
+                            "key": "sports analyst",
+                            "count": 1
+                        },
+                        {
+                            "key": "investor",
+                            "count": 1
+                        },
+                        {
+                            "key": "founder",
+                            "count": 1
+                        }
+                    ]
+                },
+                "gender": {
+                    "values": [
+                        {
+                            "key": "M",
+                            "count": 19
+                        },
+                        {
+                            "key": "U",
+                            "count": 6
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+```
+
+
+------------------------
+output:
+("entity"{tuple_delimiter}COUNT{tuple_delimiter}FIELD{tuple_delimiter}A field representing the number of occurrences of a specific key or value in the dataset)
+{record_delimiter}
+("entity"{tuple_delimiter}KEY{tuple_delimiter}FIELD{tuple_delimiter}A field representing a specific category or identifier within the dataset, such as "professional wrestler" or "businessperson")
+{record_delimiter}
+("entity"{tuple_delimiter}GENDER{tuple_delimiter}FIELD{tuple_delimiter}A field representing the gender classification of individuals in the dataset, with values like "M" for male and "U" for unspecified)
+{record_delimiter}
+("relationship"{tuple_delimiter}COUNT{tuple_delimiter}KEY{tuple_delimiter}The count field indicates the number of times a specific key appears in the dataset{tuple_delimiter}8)
+{record_delimiter}
+("relationship"{tuple_delimiter}GENDER{tuple_delimiter}COUNT{tuple_delimiter}The gender field uses the count field to show the number of individuals classified under each gender category{tuple_delimiter}7)
+{completion_delimiter}
+#############################
+
+
+
+-Real Data-
+######################
+entity_types: [author, document, field, query, platform, social media, engagement, verification, language, location, source, provider, media type, pricing, news focus, outlet type, copyright owner, social origin type, user tag, analytics, result list, search API, boolean query, alias, script, function]
+text: {input_text}
+######################
+output:
