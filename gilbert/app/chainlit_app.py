@@ -5,7 +5,7 @@ from autogen_agentchat.base import TaskResult
 from autogen_agentchat.messages import ModelClientStreamingChunkEvent, TextMessage
 from autogen_agentchat.teams import RoundRobinGroupChat
 
-from gilbert.agent.multi_agent.the_bois import team
+from gilbert.agent.multi_agent_graphrag.the_bois import team
 
 
 @cl.on_chat_start

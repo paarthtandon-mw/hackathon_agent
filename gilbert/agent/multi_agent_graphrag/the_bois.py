@@ -3,7 +3,7 @@ from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.conditions import TextMentionTermination
 from autogen_agentchat.teams import RoundRobinGroupChat
 
-from gilbert.agent.multi_agent.prompts import (
+from gilbert.agent.multi_agent_graphrag.prompts import (
     MAIN_SYSTEM_PROMPT,
     RETRIEVAL_SYSTEM_PROMPT,
 )
